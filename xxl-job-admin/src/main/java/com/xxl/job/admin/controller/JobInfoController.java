@@ -98,7 +98,7 @@ public class JobInfoController {
 		}
 	}
 	
-	@RequestMapping("/pageList")
+	@RequestMapping("/pageList")  // todo 任务列表
 	@ResponseBody
 	public Map<String, Object> pageList(@RequestParam(required = false, defaultValue = "0") int start,  
 			@RequestParam(required = false, defaultValue = "10") int length,
@@ -107,13 +107,13 @@ public class JobInfoController {
 		return xxlJobService.pageList(start, length, jobGroup, triggerStatus, jobDesc, executorHandler, author);
 	}
 	
-	@RequestMapping("/add")
+	@RequestMapping("/add")  // todo 任务添加
 	@ResponseBody
-	public ReturnT<String> add(XxlJobInfo jobInfo) {
-		return xxlJobService.add(jobInfo);
+	public ReturnT<String> add(XxlJobInfo jobInfo) { // {"code":200,"msg":null,"content":"5"}
+		return xxlJobService.add(jobInfo); //  todo 添加成功，返回任务ID  content就是任务ID
 	}
 	
-	@RequestMapping("/update")
+	@RequestMapping("/update") // todo 任务修改
 	@ResponseBody
 	public ReturnT<String> update(XxlJobInfo jobInfo) {
 		return xxlJobService.update(jobInfo);
@@ -125,7 +125,7 @@ public class JobInfoController {
 		return xxlJobService.remove(id);
 	}
 	
-	@RequestMapping("/stop")
+	@RequestMapping("/stop")  // todo 任务停止
 	@ResponseBody
 	public ReturnT<String> pause(int id) {
 		return xxlJobService.stop(id);
@@ -133,7 +133,7 @@ public class JobInfoController {
 	
 	@RequestMapping("/start")
 	@ResponseBody
-	public ReturnT<String> start(int id) {
+	public ReturnT<String> start(int id) { // todo 任务启动
 		return xxlJobService.start(id);
 	}
 	
