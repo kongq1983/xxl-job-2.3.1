@@ -52,27 +52,27 @@ public class JobRegistryHelper {
 					}
 				});
 
-		// for monitor
+		// for monitor  todo 执行器注册-删除
 		registryMonitorThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				while (!toStop) {
 					try {
-						// auto registry group
+						// auto registry group  从xxl_job_group中，获取自动注册类型(address_type=0)的执行器
 						List<XxlJobGroup> groupList = XxlJobAdminConfig.getAdminConfig().getXxlJobGroupDao().findByAddressType(0);
 						if (groupList!=null && !groupList.isEmpty()) {
-
-							// remove dead address (admin/executor)
+							// SELECT t.id FROM xxl_job_registry AS t  WHERE t.update_time < DATE_ADD(NOW(),INTERVAL -90 SECOND)
+							// remove dead address (admin/executor)   DEAD_TIMEOUT = 90   其实就是查修改时间是90s之前的数据
 							List<Integer> ids = XxlJobAdminConfig.getAdminConfig().getXxlJobRegistryDao().findDead(RegistryConfig.DEAD_TIMEOUT, new Date());
 							if (ids!=null && ids.size()>0) {
-								XxlJobAdminConfig.getAdminConfig().getXxlJobRegistryDao().removeDead(ids);
+								XxlJobAdminConfig.getAdminConfig().getXxlJobRegistryDao().removeDead(ids); // 从xxl_job_registry，删除过期注册的执行器
 							}
 
 							// fresh online address (admin/executor)
-							HashMap<String, List<String>> appAddressMap = new HashMap<String, List<String>>();
+							HashMap<String, List<String>> appAddressMap = new HashMap<String, List<String>>(); // todo 从xxl_job_registry查找，90s内的注册的执行器
 							List<XxlJobRegistry> list = XxlJobAdminConfig.getAdminConfig().getXxlJobRegistryDao().findAll(RegistryConfig.DEAD_TIMEOUT, new Date());
 							if (list != null) {
-								for (XxlJobRegistry item: list) {
+								for (XxlJobRegistry item: list) { // todo 这里的执行器列表都是90s内的，从定义上算有效的(有肯能是执行器已经挂了，或者关闭了)
 									if (RegistryConfig.RegistType.EXECUTOR.name().equals(item.getRegistryGroup())) {
 										String appname = item.getRegistryKey();
 										List<String> registryList = appAddressMap.get(appname);
@@ -86,11 +86,11 @@ public class JobRegistryHelper {
 										appAddressMap.put(appname, registryList);
 									}
 								}
-							}
+							} // todo 这一段 其实就是把90s内的执行器，取出来，然后放入appAddressMap  key: app_name  value: 执行器地址列表
 
 							// fresh group address
 							for (XxlJobGroup group: groupList) {
-								List<String> registryList = appAddressMap.get(group.getAppname());
+								List<String> registryList = appAddressMap.get(group.getAppname());  // 根据app_name来获取
 								String addressListStr = null;
 								if (registryList!=null && !registryList.isEmpty()) {
 									Collections.sort(registryList);
@@ -103,7 +103,7 @@ public class JobRegistryHelper {
 								}
 								group.setAddressList(addressListStr);
 								group.setUpdateTime(new Date());
-
+								// todo 自动注册 会修改xxl_job_group的address_list
 								XxlJobAdminConfig.getAdminConfig().getXxlJobGroupDao().update(group);
 							}
 						}
