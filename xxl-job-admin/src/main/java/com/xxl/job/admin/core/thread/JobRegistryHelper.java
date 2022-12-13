@@ -56,7 +56,7 @@ public class JobRegistryHelper {
 		registryMonitorThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				while (!toStop) {
+				while (!toStop) { // 每30s(RegistryConfig.BEAT_TIMEOUT)  执行1次
 					try {
 						// auto registry group  从xxl_job_group中，获取自动注册类型(address_type=0)的执行器
 						List<XxlJobGroup> groupList = XxlJobAdminConfig.getAdminConfig().getXxlJobGroupDao().findByAddressType(0);
@@ -88,7 +88,7 @@ public class JobRegistryHelper {
 								}
 							} // todo 这一段 其实就是把90s内的执行器，取出来，然后放入appAddressMap  key: app_name  value: 执行器地址列表
 
-							// fresh group address
+							// fresh group address 下面这段其实就是 遍历目前所有的执行器(xxl_job_group) ，然后根据app_name，把上面的地址(xxl_job_registry)给设置进来
 							for (XxlJobGroup group: groupList) {
 								List<String> registryList = appAddressMap.get(group.getAppname());  // 根据app_name来获取
 								String addressListStr = null;
@@ -113,7 +113,7 @@ public class JobRegistryHelper {
 						}
 					}
 					try {
-						TimeUnit.SECONDS.sleep(RegistryConfig.BEAT_TIMEOUT);
+						TimeUnit.SECONDS.sleep(RegistryConfig.BEAT_TIMEOUT); // 休息30s 执行1次
 					} catch (InterruptedException e) {
 						if (!toStop) {
 							logger.error(">>>>>>>>>>> xxl-job, job registry monitor thread error:{}", e);

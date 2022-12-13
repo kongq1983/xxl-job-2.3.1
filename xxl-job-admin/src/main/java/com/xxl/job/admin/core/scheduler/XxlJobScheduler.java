@@ -28,7 +28,7 @@ public class XxlJobScheduler  {
         JobTriggerPoolHelper.toStart();
 
         // admin registry monitor run
-        JobRegistryHelper.getInstance().start();
+        JobRegistryHelper.getInstance().start();  // todo 启动执行器注册-删除线程
 
         // admin fail-monitor run
         JobFailMonitorHelper.getInstance().start();

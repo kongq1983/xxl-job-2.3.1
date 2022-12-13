@@ -151,16 +151,16 @@ public class JobInfoController {
 	}
 
 	@RequestMapping("/nextTriggerTime")
-	@ResponseBody
+	@ResponseBody // todo 下次执行时间
 	public ReturnT<List<String>> nextTriggerTime(String scheduleType, String scheduleConf) {
 
 		XxlJobInfo paramXxlJobInfo = new XxlJobInfo();
-		paramXxlJobInfo.setScheduleType(scheduleType);
-		paramXxlJobInfo.setScheduleConf(scheduleConf);
+		paramXxlJobInfo.setScheduleType(scheduleType); // CRON、固定速度
+		paramXxlJobInfo.setScheduleConf(scheduleConf); // 上面的值
 
 		List<String> result = new ArrayList<>();
 		try {
-			Date lastTime = new Date();
+			Date lastTime = new Date(); // todo 从现在开始
 			for (int i = 0; i < 5; i++) {
 				lastTime = JobScheduleHelper.generateNextValidTime(paramXxlJobInfo, lastTime);
 				if (lastTime != null) {
