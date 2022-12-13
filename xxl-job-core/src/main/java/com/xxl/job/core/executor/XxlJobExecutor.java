@@ -71,7 +71,7 @@ public class XxlJobExecutor  {
         XxlJobFileAppender.initLogPath(logPath);
 
         // init invoker, admin-client
-        initAdminBizList(adminAddresses, accessToken);
+        initAdminBizList(adminAddresses, accessToken); // todo adminAddresses支持多个
 
 
         // init JobLogFileCleanThread
@@ -80,7 +80,7 @@ public class XxlJobExecutor  {
         // init TriggerCallbackThread  todo callback
         TriggerCallbackThread.getInstance().start();
 
-        // init executor-server
+        // init executor-server 启动EmbedServer
         initEmbedServer(address, ip, port, appname, accessToken);
     }
 
@@ -215,7 +215,7 @@ public class XxlJobExecutor  {
         Method initMethod = null;
         Method destroyMethod = null;
 
-        if (xxlJob.init().trim().length() > 0) {
+        if (xxlJob.init().trim().length() > 0) { // todo XxlJob有指定init方法
             try {
                 initMethod = clazz.getDeclaredMethod(xxlJob.init());
                 initMethod.setAccessible(true);
@@ -223,7 +223,7 @@ public class XxlJobExecutor  {
                 throw new RuntimeException("xxl-job method-jobhandler initMethod invalid, for[" + clazz + "#" + methodName + "] .");
             }
         }
-        if (xxlJob.destroy().trim().length() > 0) {
+        if (xxlJob.destroy().trim().length() > 0) {  // todo XxlJob有指定destroy方法
             try {
                 destroyMethod = clazz.getDeclaredMethod(xxlJob.destroy());
                 destroyMethod.setAccessible(true);
@@ -232,7 +232,7 @@ public class XxlJobExecutor  {
             }
         }
 
-        // registry jobhandler
+        // registry jobhandler   todo name = xxlJob.value()
         registJobHandler(name, new MethodJobHandler(bean, executeMethod, initMethod, destroyMethod));
 
     }

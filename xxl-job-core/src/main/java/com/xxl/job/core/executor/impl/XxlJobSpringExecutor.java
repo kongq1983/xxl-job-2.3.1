@@ -101,12 +101,12 @@ public class XxlJobSpringExecutor extends XxlJobExecutor implements ApplicationC
             if (annotatedMethods==null || annotatedMethods.isEmpty()) {
                 continue;
             }
-
+            // todo 上面从spring容器中，得到所有标记XxlJob的方法
             for (Map.Entry<Method, XxlJob> methodXxlJobEntry : annotatedMethods.entrySet()) {
                 Method executeMethod = methodXxlJobEntry.getKey();
                 XxlJob xxlJob = methodXxlJobEntry.getValue();
                 // regist
-                registJobHandler(xxlJob, bean, executeMethod);
+                registJobHandler(xxlJob, bean, executeMethod);  // 注册
             }
         }
     }

@@ -158,9 +158,9 @@ public class JobRegistryHelper {
 		// async execute
 		registryOrRemoveThreadPool.execute(new Runnable() {
 			@Override
-			public void run() {
+			public void run() { // todo 先执行修改  xxl_job_registry
 				int ret = XxlJobAdminConfig.getAdminConfig().getXxlJobRegistryDao().registryUpdate(registryParam.getRegistryGroup(), registryParam.getRegistryKey(), registryParam.getRegistryValue(), new Date());
-				if (ret < 1) {
+				if (ret < 1) { // todo 如果修改失败  再执行insert   xxl_job_registry
 					XxlJobAdminConfig.getAdminConfig().getXxlJobRegistryDao().registrySave(registryParam.getRegistryGroup(), registryParam.getRegistryKey(), registryParam.getRegistryValue(), new Date());
 
 					// fresh
@@ -184,7 +184,7 @@ public class JobRegistryHelper {
 		// async execute
 		registryOrRemoveThreadPool.execute(new Runnable() {
 			@Override
-			public void run() {
+			public void run() { // todo 从xxl_job_registry删除该实例
 				int ret = XxlJobAdminConfig.getAdminConfig().getXxlJobRegistryDao().registryDelete(registryParam.getRegistryGroup(), registryParam.getRegistryKey(), registryParam.getRegistryValue());
 				if (ret > 0) {
 					// fresh

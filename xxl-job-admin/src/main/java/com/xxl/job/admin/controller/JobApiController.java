@@ -30,7 +30,7 @@ public class JobApiController {
 
     /**
      * api
-     *
+     * todo 本类只是 执行器注册和删除(xxl_job_registry)
      * @param uri
      * @param data
      * @return
@@ -62,7 +62,7 @@ public class JobApiController {
             return adminBiz.registry(registryParam); // xxl_job_registry  先update，如果失败，在insert
         } else if ("registryRemove".equals(uri)) {
             RegistryParam registryParam = GsonTool.fromJson(data, RegistryParam.class);
-            return adminBiz.registryRemove(registryParam);
+            return adminBiz.registryRemove(registryParam); // xxl_job_registry 删除数据
         } else {
             return new ReturnT<String>(ReturnT.FAIL_CODE, "invalid request, uri-mapping("+ uri +") not found.");
         }
