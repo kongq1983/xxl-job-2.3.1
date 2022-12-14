@@ -23,11 +23,11 @@ public class JobTriggerPoolHelper {
     // fast/slow thread pool
     private ThreadPoolExecutor fastTriggerPool = null;
     private ThreadPoolExecutor slowTriggerPool = null;
-
-    public void start(){
+    // 初始化一个快处理线程池和一个慢处理线程池。如果一个任务在1分钟之内出现10次调用超时，则这个任务会加入到慢处理线程池中进行调度
+    public void start(){ // 使执行任务的线程池隔离：调度线程池进行隔离拆分，慢任务自动降级进入"Slow"线程池，避免耗尽调度线程，提高系统稳定性
         fastTriggerPool = new ThreadPoolExecutor(
                 10,
-                XxlJobAdminConfig.getAdminConfig().getTriggerPoolFastMax(),
+                XxlJobAdminConfig.getAdminConfig().getTriggerPoolFastMax(), // 最小200
                 60L,
                 TimeUnit.SECONDS,
                 new LinkedBlockingQueue<Runnable>(1000),
@@ -40,7 +40,7 @@ public class JobTriggerPoolHelper {
 
         slowTriggerPool = new ThreadPoolExecutor(
                 10,
-                XxlJobAdminConfig.getAdminConfig().getTriggerPoolSlowMax(),
+                XxlJobAdminConfig.getAdminConfig().getTriggerPoolSlowMax(), // 最小100
                 60L,
                 TimeUnit.SECONDS,
                 new LinkedBlockingQueue<Runnable>(2000),

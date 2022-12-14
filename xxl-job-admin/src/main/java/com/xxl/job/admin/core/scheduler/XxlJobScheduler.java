@@ -24,8 +24,8 @@ public class XxlJobScheduler  {
         // init i18n
         initI18n();
 
-        // admin trigger pool start
-        JobTriggerPoolHelper.toStart();
+        // admin trigger pool start 初始化一个快处理线程池和一个慢处理线程池。如果一个任务在1分钟之内出现10次调用超时，则这个任务会加入到慢处理线程池中进行调度
+        JobTriggerPoolHelper.toStart(); // 使执行任务的线程池隔离：调度线程池进行隔离拆分，慢任务自动降级进入"Slow"线程池，避免耗尽调度线程，提高系统稳定性
 
         // admin registry monitor run
         JobRegistryHelper.getInstance().start();  // todo 启动执行器注册-删除线程
@@ -38,8 +38,8 @@ public class XxlJobScheduler  {
 
         // admin log report start
         JobLogReportHelper.getInstance().start();
-
-        // start-schedule  ( depend on JobTriggerPoolHelper )
+        // 这里会创建两个线程：一个线程是从xxl_job_info表中取出未来5秒内要执行的任务，然后将任务按照执行时间加入到ringData（时间轮）中
+        // start-schedule  ( depend on JobTriggerPoolHelper ) 另一个线程则是从ringData（时间轮）中取出数据进行任务调度
         JobScheduleHelper.getInstance().start();
 
         logger.info(">>>>>>>>> init xxl-job admin success.");

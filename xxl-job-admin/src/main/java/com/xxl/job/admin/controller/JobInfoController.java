@@ -137,7 +137,7 @@ public class JobInfoController {
 		return xxlJobService.start(id);
 	}
 	
-	@RequestMapping("/trigger")
+	@RequestMapping("/trigger") // todo 执行1次
 	@ResponseBody
 	//@PermissionLimit(limit = false)
 	public ReturnT<String> triggerJob(int id, String executorParam, String addressList) {
@@ -145,7 +145,7 @@ public class JobInfoController {
 		if (executorParam == null) {
 			executorParam = "";
 		}
-
+		// todo 放入线程池
 		JobTriggerPoolHelper.trigger(id, TriggerTypeEnum.MANUAL, -1, null, executorParam, addressList);
 		return ReturnT.SUCCESS;
 	}

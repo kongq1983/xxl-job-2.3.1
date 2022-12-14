@@ -302,17 +302,17 @@ public class XxlJobServiceImpl implements XxlJobService {
 
 	@Override
 	public ReturnT<String> start(int id) {
-		XxlJobInfo xxlJobInfo = xxlJobInfoDao.loadById(id);
+		XxlJobInfo xxlJobInfo = xxlJobInfoDao.loadById(id); // 从库中读取任务
 
-		// valid
+		// valid  调度类型
 		ScheduleTypeEnum scheduleTypeEnum = ScheduleTypeEnum.match(xxlJobInfo.getScheduleType(), ScheduleTypeEnum.NONE);
-		if (ScheduleTypeEnum.NONE == scheduleTypeEnum) {
+		if (ScheduleTypeEnum.NONE == scheduleTypeEnum) { // 无
 			return new ReturnT<String>(ReturnT.FAIL_CODE, (I18nUtil.getString("schedule_type_none_limit_start")) );
 		}
 
 		// next trigger time (5s后生效，避开预读周期)
 		long nextTriggerTime = 0;
-		try {
+		try { // todo  PRE_READ_MS=5000  任务启动后 ，至少5s开始调度  注意：每个任务都需要启动  添加任务后，默认是停止的
 			Date nextValidTime = JobScheduleHelper.generateNextValidTime(xxlJobInfo, new Date(System.currentTimeMillis() + JobScheduleHelper.PRE_READ_MS));
 			if (nextValidTime == null) {
 				return new ReturnT<String>(ReturnT.FAIL_CODE, (I18nUtil.getString("schedule_type")+I18nUtil.getString("system_unvalid")) );
@@ -323,9 +323,9 @@ public class XxlJobServiceImpl implements XxlJobService {
 			return new ReturnT<String>(ReturnT.FAIL_CODE, (I18nUtil.getString("schedule_type")+I18nUtil.getString("system_unvalid")) );
 		}
 
-		xxlJobInfo.setTriggerStatus(1);
-		xxlJobInfo.setTriggerLastTime(0);
-		xxlJobInfo.setTriggerNextTime(nextTriggerTime);
+		xxlJobInfo.setTriggerStatus(1); // 调度状态：0-停止，1-运行
+		xxlJobInfo.setTriggerLastTime(0);  // 上次调度时间
+		xxlJobInfo.setTriggerNextTime(nextTriggerTime); // 下次调度时间
 
 		xxlJobInfo.setUpdateTime(new Date());
 		xxlJobInfoDao.update(xxlJobInfo);

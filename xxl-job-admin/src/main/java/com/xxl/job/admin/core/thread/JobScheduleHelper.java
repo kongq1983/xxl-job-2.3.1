@@ -33,17 +33,17 @@ public class JobScheduleHelper {
     private Thread ringThread;
     private volatile boolean scheduleThreadToStop = false;
     private volatile boolean ringThreadToStop = false;
-    private volatile static Map<Integer, List<Integer>> ringData = new ConcurrentHashMap<>();
+    private volatile static Map<Integer, List<Integer>> ringData = new ConcurrentHashMap<>(); // todo key:0-59   value:jog_id列表
 
     public void start(){
-
-        // schedule thread
+        //  这里会创建两个线程：一个线程是从xxl_job_info表中取出未来5秒内要执行的任务，然后将任务按照执行时间加入到ringData（时间轮）中
+        // schedule thread  另一个线程则是从ringData（时间轮）中取出数据进行任务调度
         scheduleThread = new Thread(new Runnable() {
             @Override
             public void run() {
 
-                try {
-                    TimeUnit.MILLISECONDS.sleep(5000 - System.currentTimeMillis()%1000 );
+                try { // 休息4s 到 5s之间
+                    TimeUnit.MILLISECONDS.sleep(5000 - System.currentTimeMillis()%1000 ); // todo  sleep 4s - 5s之间
                 } catch (InterruptedException e) {
                     if (!scheduleThreadToStop) {
                         logger.error(e.getMessage(), e);
@@ -53,7 +53,7 @@ public class JobScheduleHelper {
 
                 // pre-read count: treadpool-size * trigger-qps (each trigger cost 50ms, qps = 1000/50 = 20)
                 int preReadCount = (XxlJobAdminConfig.getAdminConfig().getTriggerPoolFastMax() + XxlJobAdminConfig.getAdminConfig().getTriggerPoolSlowMax()) * 20;
-
+                // todo 最少  (200+100) * 20 = 6000
                 while (!scheduleThreadToStop) {
 
                     // Scan Job
@@ -69,21 +69,21 @@ public class JobScheduleHelper {
                         conn = XxlJobAdminConfig.getAdminConfig().getDataSource().getConnection();
                         connAutoCommit = conn.getAutoCommit();
                         conn.setAutoCommit(false);
-
+                        // 加锁
                         preparedStatement = conn.prepareStatement(  "select * from xxl_job_lock where lock_name = 'schedule_lock' for update" );
                         preparedStatement.execute();
 
                         // tx start
 
                         // 1、pre read
-                        long nowTime = System.currentTimeMillis();
+                        long nowTime = System.currentTimeMillis(); // 查5s内的任务(xxl_job_info)  每次加载最少6000条
                         List<XxlJobInfo> scheduleList = XxlJobAdminConfig.getAdminConfig().getXxlJobInfoDao().scheduleJobQuery(nowTime + PRE_READ_MS, preReadCount);
                         if (scheduleList!=null && scheduleList.size()>0) {
                             // 2、push time-ring
                             for (XxlJobInfo jobInfo: scheduleList) {
 
                                 // time-ring jump
-                                if (nowTime > jobInfo.getTriggerNextTime() + PRE_READ_MS) {
+                                if (nowTime > jobInfo.getTriggerNextTime() + PRE_READ_MS) { // 过期5s外
                                     // 2.1、trigger-expire > 5s：pass && make next-trigger-time
                                     logger.warn(">>>>>>>>>>> xxl-job, schedule misfire, jobId = " + jobInfo.getId());
 
@@ -98,7 +98,7 @@ public class JobScheduleHelper {
                                     // 2、fresh next
                                     refreshNextValidTime(jobInfo, new Date());
 
-                                } else if (nowTime > jobInfo.getTriggerNextTime()) {
+                                } else if (nowTime > jobInfo.getTriggerNextTime()) { // 过期5s内
                                     // 2.2、trigger-expire < 5s：direct-trigger && make next-trigger-time
 
                                     // 1、trigger
@@ -122,16 +122,16 @@ public class JobScheduleHelper {
 
                                     }
 
-                                } else {
+                                } else { // todo 未过期 有效范围内 nowTime <= jobInfo.getTriggerNextTime()
                                     // 2.3、trigger-pre-read：time-ring trigger && make next-trigger-time
 
-                                    // 1、make ring second
+                                    // 1、make ring second   分割60格  0-59
                                     int ringSecond = (int)((jobInfo.getTriggerNextTime()/1000)%60);
 
-                                    // 2、push time ring
+                                    // 2、push time ring   todo 放到相应的桶里
                                     pushTimeRing(ringSecond, jobInfo.getId());
 
-                                    // 3、fresh next
+                                    // 3、fresh next  计算下一次执行时间
                                     refreshNextValidTime(jobInfo, new Date(jobInfo.getTriggerNextTime()));
 
                                 }
@@ -139,7 +139,7 @@ public class JobScheduleHelper {
                             }
 
                             // 3、update trigger info
-                            for (XxlJobInfo jobInfo: scheduleList) {
+                            for (XxlJobInfo jobInfo: scheduleList) { // todo 修改下一次执行时间
                                 XxlJobAdminConfig.getAdminConfig().getXxlJobInfoDao().scheduleUpdate(jobInfo);
                             }
 
@@ -196,10 +196,10 @@ public class JobScheduleHelper {
 
 
                     // Wait seconds, align second
-                    if (cost < 1000) {  // scan-overtime, not wait
+                    if (cost < 1000) {  // scan-overtime, not wait  时间花费小于1s
                         try {
-                            // pre-read period: success > scan each second; fail > skip this period;
-                            TimeUnit.MILLISECONDS.sleep((preReadSuc?1000:PRE_READ_MS) - System.currentTimeMillis()%1000);
+                            // pre-read period: success > scan each second; fail > skip this period;   preReadSuc=true 相当于本次执行，没有定时任务数据
+                            TimeUnit.MILLISECONDS.sleep((preReadSuc?1000:PRE_READ_MS) - System.currentTimeMillis()%1000); // 本次无数据，休息1-1000ms  有数据 1-5000ms
                         } catch (InterruptedException e) {
                             if (!scheduleThreadToStop) {
                                 logger.error(e.getMessage(), e);
@@ -217,7 +217,7 @@ public class JobScheduleHelper {
         scheduleThread.start();
 
 
-        // ring thread
+        // ring thread  todo 从ringData（时间轮）中取出数据进行任务调度
         ringThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -225,7 +225,7 @@ public class JobScheduleHelper {
                 while (!ringThreadToStop) {
 
                     // align second
-                    try {
+                    try { // todo 休息1-1000ms
                         TimeUnit.MILLISECONDS.sleep(1000 - System.currentTimeMillis() % 1000);
                     } catch (InterruptedException e) {
                         if (!ringThreadToStop) {
@@ -233,14 +233,14 @@ public class JobScheduleHelper {
                         }
                     }
 
-                    try {
+                    try { // todo 从时间轮内移出 (当前秒数) 和 (前1秒)
                         // second data
                         List<Integer> ringItemData = new ArrayList<>();
-                        int nowSecond = Calendar.getInstance().get(Calendar.SECOND);   // 避免处理耗时太长，跨过刻度，向前校验一个刻度；
-                        for (int i = 0; i < 2; i++) {
+                        int nowSecond = Calendar.getInstance().get(Calendar.SECOND);   // todo 避免处理耗时太长，跨过刻度，向前校验一个刻度
+                        for (int i = 0; i < 2; i++) { // i=0 当前秒   i=1 前1秒
                             List<Integer> tmpData = ringData.remove( (nowSecond+60-i)%60 );
                             if (tmpData != null) {
-                                ringItemData.addAll(tmpData);
+                                ringItemData.addAll(tmpData);  // todo 移除当前秒和前1秒的数据 到ringItemData
                             }
                         }
 
@@ -249,7 +249,7 @@ public class JobScheduleHelper {
                         if (ringItemData.size() > 0) {
                             // do trigger
                             for (int jobId: ringItemData) {
-                                // do trigger
+                                // do trigger  todo 放入线程池，异步执行
                                 JobTriggerPoolHelper.trigger(jobId, TriggerTypeEnum.CRON, -1, null, null, null);
                             }
                             // clear
@@ -282,7 +282,7 @@ public class JobScheduleHelper {
                     jobInfo.getId(), jobInfo.getScheduleType(), jobInfo.getScheduleConf());
         }
     }
-
+    // todo 放到相应的桶里
     private void pushTimeRing(int ringSecond, int jobId){
         // push async ring
         List<Integer> ringItemData = ringData.get(ringSecond);
