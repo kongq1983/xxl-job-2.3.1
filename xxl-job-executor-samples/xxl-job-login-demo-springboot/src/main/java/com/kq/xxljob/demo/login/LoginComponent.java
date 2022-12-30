@@ -1,5 +1,7 @@
 package com.kq.xxljob.demo.login;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -10,8 +12,12 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+
 @Component
 public class LoginComponent {
+
+    private Logger logger = LoggerFactory.getLogger(LoginComponent.class);
 
     @Autowired
     private RestTemplate restTemplate;
@@ -33,6 +39,14 @@ public class LoginComponent {
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
 
         ResponseEntity<String> result = restTemplate.postForEntity(url, request, String.class);
+        logger.info("login result = {} ",result);
+
+        List<String> cookies = result.getHeaders().get("Set-Cookie");
+
+        for(String cookie : cookies) {
+            System.out.println("cookie="+cookie);
+        }
+
 
 
     }
