@@ -7,10 +7,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author xuxueli 2018-10-28 00:38:13
  */
 @SpringBootApplication
-public class XxlJobDemoApplication {
+public class XxlJobLoginDemoApplication {
 
 	public static void main(String[] args) {
-        SpringApplication.run(XxlJobDemoApplication.class, args);
+        SpringApplication.run(XxlJobLoginDemoApplication.class, args);
 	}
 
 }

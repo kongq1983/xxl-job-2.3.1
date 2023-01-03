@@ -1,6 +1,7 @@
 package com.kq.xxljob.demo.controller;
 
 import com.kq.xxljob.demo.dto.XxlJobInfo;
+import com.kq.xxljob.demo.login.JobInfoComponent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,11 +16,15 @@ public class JobTaskController {
     @Autowired
     private RestTemplate restTemplate;
 
+    @Autowired
+    private JobInfoComponent jobInfoComponent;
 
+
+    // http://localhost:8083/task/add
     @GetMapping("/add")
     public String index() {
 
-
+        jobInfoComponent.add(this.getXxlJobInfo());
 
         return "ok";
     }

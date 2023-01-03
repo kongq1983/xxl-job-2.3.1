@@ -24,6 +24,13 @@ public class LoginComponent {
 
     public void login(String userName,String password) {
 
+        this.login(restTemplate,userName,password);
+
+    }
+
+
+    public void login(RestTemplate restTemplate,String userName,String password) {
+
         String url = "http://localhost:8080/xxl-job-admin/login";
 
 //        restTemplate.postForEntity()
@@ -48,6 +55,26 @@ public class LoginComponent {
         }
 
 
+
+    }
+
+
+    /**
+     * @param restTemplate
+     * @param result
+     * @return true:重新登录过了  false:不需要
+     */
+    public boolean checkNeedLogin(RestTemplate restTemplate,ResponseEntity<?> result) {
+
+        if(result.getStatusCodeValue()==302) {
+            logger.info("need login ------------------------");
+
+            this.login(restTemplate,"admin","123456");
+
+            return true;
+        }
+
+        return false;
 
     }
 
