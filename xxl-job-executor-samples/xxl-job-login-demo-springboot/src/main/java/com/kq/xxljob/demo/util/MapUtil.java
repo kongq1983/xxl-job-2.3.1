@@ -32,6 +32,22 @@ public class MapUtil {
 
     }
 
+
+    public static MultiValueMap<String, Object> idToMultiValueMap(Long id) {
+
+
+        MultiValueMap<String, Object> multiValueMap = new LinkedMultiValueMap<>();
+
+        if(id==null) {
+            return multiValueMap;
+        }
+
+        multiValueMap.put("id", valueToListValue(id));
+
+        return multiValueMap;
+
+    }
+
     public static List<Object> valueToListValue(Object value) {
         List<Object> list = new ArrayList<>();
 

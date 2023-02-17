@@ -31,6 +31,12 @@ public class JobInfoComponent {
     private LoginComponent loginComponent;
 
 
+    /**
+     * 添加job_info
+     * @param jobInfo
+     * @return
+     * @throws Exception
+     */
     public Long add(XxlJobInfo jobInfo) throws Exception{
 
         String url = "http://localhost:8080/xxl-job-admin/jobinfo/add";
@@ -60,6 +66,47 @@ public class JobInfoComponent {
 
 
         return NumberUtil.toLong(resultMap.get("content"));
+
+    }
+
+
+    /**
+     * 删除job_info
+     * @param jobInfoId
+     * @return
+     * @throws Exception
+     */
+    public boolean remove(Long jobInfoId) throws Exception{
+
+        String url = "http://localhost:8080/xxl-job-admin/jobinfo/remove";
+
+        HttpHeaders headers = new HttpHeaders();
+
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(MapUtil.idToMultiValueMap(jobInfoId), headers);
+//        HttpEntity<XxlJobInfo> request = new HttpEntity<>(null, headers);
+//      uriVariables 接收是@PathVariable
+
+//
+        ResponseEntity<String> result = restTemplate.postForEntity(url, request, String.class);
+        logger.info("first login result = {} ",result);
+
+        boolean needRetry = loginComponent.checkNeedLogin(restTemplate,result);
+
+        if(needRetry){
+            result = restTemplate.postForEntity(url, request, String.class);
+            logger.info("second login result = {} ",result);
+        }
+
+        Map<String, String> resultMap = GsonUtil.stringToMap(result.getBody());
+
+        logger.info("job add resultMap = {} ",resultMap);
+
+        // 成功码
+        String successCode = "200";
+
+        return successCode.equals(resultMap.get("code"));
 
     }
 
