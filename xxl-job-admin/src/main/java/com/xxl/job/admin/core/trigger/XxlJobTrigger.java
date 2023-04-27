@@ -61,7 +61,7 @@ public class XxlJobTrigger {
         XxlJobGroup group = XxlJobAdminConfig.getAdminConfig().getXxlJobGroupDao().load(jobInfo.getJobGroup()); // 根据执行器ID获取数据(xxl_job_group)
 
         // cover addressList
-        if (addressList!=null && addressList.trim().length()>0) {
+        if (addressList!=null && addressList.trim().length()>0) {  // todo addressList如果不为空，则是从界面传参过来的  界面是执行一次(手动)
             group.setAddressType(1); // 1=手动录入
             group.setAddressList(addressList.trim());
         }
@@ -148,7 +148,7 @@ public class XxlJobTrigger {
                 } else {
                     address = group.getRegistryList().get(0);
                 }
-            } else { // todo 非分片广播  才有路由
+            } else { // todo 非分片广播  才有路由  // todo 这里是策略 如果是FIRST，则是ExecutorRouteFirst，取第0个位置的服务器地址
                 routeAddressResult = executorRouteStrategyEnum.getRouter().route(triggerParam, group.getRegistryList());
                 if (routeAddressResult.getCode() == ReturnT.SUCCESS_CODE) {
                     address = routeAddressResult.getContent();
@@ -158,11 +158,11 @@ public class XxlJobTrigger {
             routeAddressResult = new ReturnT<String>(ReturnT.FAIL_CODE, I18nUtil.getString("jobconf_trigger_address_empty"));
         }
 
-        // 4、trigger remote executor
+        // 4、trigger remote executor  触发远程执行器
         ReturnT<String> triggerResult = null;
         if (address != null) {
             triggerResult = runExecutor(triggerParam, address);
-        } else {
+        } else { // 调用失败
             triggerResult = new ReturnT<String>(ReturnT.FAIL_CODE, null);
         }
 

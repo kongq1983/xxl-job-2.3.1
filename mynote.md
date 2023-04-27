@@ -19,6 +19,81 @@ public void afterPropertiesSet() throws Exception {
 }
 
 
+## JobTriggerPoolHelper
+### addTrigger
+addTrigger(final int jobId,......)
+
+
 # 步骤
 
 ## 添加执行器
+
+
+# Client
+
+## XxlJobSpringExecutor
+通过@Bean方式加载
+
+```yaml
+XxlJobSpringExecutor extends XxlJobExecutor {}
+```
+
+
+### afterSingletonsInstantiated
+
+1. 注册当前spring容器中所有的@XxlJob
+2. 把@XxlJob封装成MethodJobHandler
+3. 然后统一放到jobHandlerRepository
+ConcurrentMap<String, IJobHandler> jobHandlerRepository = new ConcurrentHashMap
+```yaml
+initJobHandlerMethodRepository(applicationContext);
+```
+
+```yaml
+registJobHandler(name, new MethodJobHandler(bean, executeMethod, initMethod, destroyMethod));
+```
+
+## XxlJobExecutor
+
+### XxlJobExecutor.registJobThread
+
+JobThread初始化并启动
+
+```yaml
+
+public static JobThread registJobThread(int jobId, IJobHandler handler, String removeOldReason){
+    JobThread newJobThread = new JobThread(jobId, handler);
+    newJobThread.start();
+    logger.info(">>>>>>>>>>> xxl-job regist JobThread success, jobId:{}, handler:{}", new Object[]{jobId, handler});
+
+    JobThread oldJobThread = jobThreadRepository.put(jobId, newJobThread);	// putIfAbsent | oh my god, map's put method return the old value!!!
+    if (oldJobThread != null) { // 如果已存在JobThread，则终止该线程
+        oldJobThread.interrupt();
+    }
+
+    return newJobThread;
+}
+
+```
+
+### registJobThread哪里调用
+ExecutorBizImpl.run()
+
+```yaml
+// replace thread (new or exists invalid)
+if (jobThread == null) {
+    jobThread = XxlJobExecutor.registJobThread(triggerParam.getJobId(), jobHandler, removeOldReason);
+}
+```
+哪里调用
+
+JobTriggerPoolHelper.trigger(触发执行器) -> JobTriggerPoolHelper.addTrigger -> XxlJobTrigger.trigger-> XxlJobTrigger.processTrigger 
+-> XxlJobTrigger.runExecutor(TriggerParam triggerParam, String address) -> ExecutorBizImpl.run()
+
+
+# 具体id
+job_id 是xxl_job_info的id
+
+
+
+

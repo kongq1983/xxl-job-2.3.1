@@ -34,7 +34,7 @@ public class XxlJobSpringExecutor extends XxlJobExecutor implements ApplicationC
         // init JobHandler Repository
         /*initJobHandlerRepository(applicationContext);*/
 
-        // init JobHandler Repository (for method)
+        // init JobHandler Repository (for method)   todo 注册当前spring容器中所有的@XxlJob
         initJobHandlerMethodRepository(applicationContext);
 
         // refresh GlueFactory

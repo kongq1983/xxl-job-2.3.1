@@ -28,10 +28,10 @@ public class JobThread extends Thread{
 	private static Logger logger = LoggerFactory.getLogger(JobThread.class);
 
 	private int jobId;
-	private IJobHandler handler;
+	private IJobHandler handler; // @XxlJob注解封装对象
 	private LinkedBlockingQueue<TriggerParam> triggerQueue;
 	private Set<Long> triggerLogIdSet;		// avoid repeat trigger for the same TRIGGER_LOG_ID
-
+	// 线程结束标志位
 	private volatile boolean toStop = false;
 	private String stopReason;
 
@@ -162,7 +162,7 @@ public class JobThread extends Thread{
 							futureThread.interrupt();
 						}
 					} else {
-						// just execute
+						// just execute  todo 这里触发handler  最终调用@XxlJob的方法
 						handler.execute();
 					}
 

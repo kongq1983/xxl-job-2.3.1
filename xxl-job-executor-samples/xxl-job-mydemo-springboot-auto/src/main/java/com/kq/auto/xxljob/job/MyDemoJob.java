@@ -6,6 +6,7 @@ package com.kq.auto.xxljob.job;
  * @since 2020-0630
  */
 
+import com.xxl.job.core.context.XxlJobContext;
 import com.xxl.job.core.context.XxlJobHelper;
 import com.xxl.job.core.handler.annotation.XxlJob;
 import org.slf4j.Logger;
@@ -37,6 +38,16 @@ public class MyDemoJob {
     @XxlJob("demoJobHandler")
     public void demoJobHandler() throws Exception {
         XxlJobHelper.log("MyDemoJob XXL-JOB, Hello World.");
+
+        // 如果分片，需要用到ShareTotal、ShareIndex
+        XxlJobContext jobContext = XxlJobContext.getXxlJobContext();
+
+        if(jobContext!=null){
+            System.out.println("jobId:"+jobContext.getJobId());
+            System.out.println("jobParam:"+jobContext.getJobParam());
+            System.out.println("shardTotal:"+jobContext.getShardTotal());
+            System.out.println("shardIndex:"+jobContext.getShardIndex());
+        }
 
         for (int i = 0; i < 2; i++) {
             XxlJobHelper.log("beat at:" + i);

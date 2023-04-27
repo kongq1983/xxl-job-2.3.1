@@ -140,7 +140,7 @@ public class JobInfoController {
 	@RequestMapping("/trigger") // todo 执行1次
 	@ResponseBody
 	//@PermissionLimit(limit = false)
-	public ReturnT<String> triggerJob(int id, String executorParam, String addressList) {
+	public ReturnT<String> triggerJob(int id, String executorParam, String addressList) { // todo addressList从界面传过来，非数据库中的地址
 		// force cover job param
 		if (executorParam == null) {
 			executorParam = "";

@@ -246,8 +246,7 @@ public class XxlJobExecutor  {
         logger.info(">>>>>>>>>>> xxl-job regist JobThread success, jobId:{}, handler:{}", new Object[]{jobId, handler});
 
         JobThread oldJobThread = jobThreadRepository.put(jobId, newJobThread);	// putIfAbsent | oh my god, map's put method return the old value!!!
-        if (oldJobThread != null) {
-            oldJobThread.toStop(removeOldReason);
+        if (oldJobThread != null) { // 如果已存在JobThread，则终止该线程
             oldJobThread.interrupt();
         }
 
@@ -256,7 +255,7 @@ public class XxlJobExecutor  {
 
     public static JobThread removeJobThread(int jobId, String removeOldReason){
         JobThread oldJobThread = jobThreadRepository.remove(jobId);
-        if (oldJobThread != null) {
+        if (oldJobThread != null) { // 如果存在，则终止该线程
             oldJobThread.toStop(removeOldReason);
             oldJobThread.interrupt();
 
