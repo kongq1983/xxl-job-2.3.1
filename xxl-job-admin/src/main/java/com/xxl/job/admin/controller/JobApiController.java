@@ -54,13 +54,13 @@ public class JobApiController {
         }
 
         // services mapping
-        if ("callback".equals(uri)) {
+        if ("callback".equals(uri)) {  // 处理日志信息 xxl_job_log 比如(trigger_code、trigger_msg)
             List<HandleCallbackParam> callbackParamList = GsonTool.fromJson(data, List.class, HandleCallbackParam.class);
             return adminBiz.callback(callbackParamList);
-        } else if ("registry".equals(uri)) {
+        } else if ("registry".equals(uri)) { // 执行器注册
             RegistryParam registryParam = GsonTool.fromJson(data, RegistryParam.class);
             return adminBiz.registry(registryParam); // xxl_job_registry  先update，如果失败，在insert  实现类: AdminBizImpl
-        } else if ("registryRemove".equals(uri)) {
+        } else if ("registryRemove".equals(uri)) { // 执行器删除
             RegistryParam registryParam = GsonTool.fromJson(data, RegistryParam.class);
             return adminBiz.registryRemove(registryParam); // xxl_job_registry 删除数据
         } else {

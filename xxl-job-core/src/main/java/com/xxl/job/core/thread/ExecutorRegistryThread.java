@@ -76,11 +76,11 @@ public class ExecutorRegistryThread {
                     }
                 }
 
-                // registry remove
+                // registry remove  todo toStop=true 退出registryThread之前
                 try {
                     RegistryParam registryParam = new RegistryParam(RegistryConfig.RegistType.EXECUTOR.name(), appname, address);
                     for (AdminBiz adminBiz: XxlJobExecutor.getAdminBizList()) {
-                        try {
+                        try { // todo 注册删除
                             ReturnT<String> registryResult = adminBiz.registryRemove(registryParam);
                             if (registryResult!=null && ReturnT.SUCCESS_CODE == registryResult.getCode()) {
                                 registryResult = ReturnT.SUCCESS;

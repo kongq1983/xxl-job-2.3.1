@@ -152,8 +152,8 @@ public class JobCompleteHelper {
 	}
 
 	private ReturnT<String> callback(HandleCallbackParam handleCallbackParam) {
-		// valid log item
-		XxlJobLog log = XxlJobAdminConfig.getAdminConfig().getXxlJobLogDao().load(handleCallbackParam.getLogId());
+		// valid log item   select * FROM xxl_job_log AS t WHERE t.id = #{id}
+		XxlJobLog log = XxlJobAdminConfig.getAdminConfig().getXxlJobLogDao().load(handleCallbackParam.getLogId()); // 根据id查询
 		if (log == null) {
 			return new ReturnT<String>(ReturnT.FAIL_CODE, "log item not found.");
 		}

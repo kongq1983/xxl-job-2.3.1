@@ -84,7 +84,7 @@ public class XxlJobExecutor  {
         initEmbedServer(address, ip, port, appname, accessToken); // 这里address如果没配置，就是为空
     }
 
-    public void destroy(){
+    public void destroy(){ // spring容器destory的时候，会来调用
         // destroy executor-server
         stopEmbedServer();
 

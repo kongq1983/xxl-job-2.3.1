@@ -184,7 +184,7 @@ public class JobRegistryHelper {
 		// async execute
 		registryOrRemoveThreadPool.execute(new Runnable() {
 			@Override
-			public void run() { // todo 从xxl_job_registry删除该实例
+			public void run() { // todo 从xxl_job_registry删除该实例  DELETE FROM xxl_job_registry WHERE registry_group = ? AND registry_key = ? AND registry_value = ?
 				int ret = XxlJobAdminConfig.getAdminConfig().getXxlJobRegistryDao().registryDelete(registryParam.getRegistryGroup(), registryParam.getRegistryKey(), registryParam.getRegistryValue());
 				if (ret > 0) {
 					// fresh

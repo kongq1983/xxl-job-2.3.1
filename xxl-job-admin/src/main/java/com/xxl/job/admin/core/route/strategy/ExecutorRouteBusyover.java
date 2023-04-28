@@ -10,7 +10,7 @@ import com.xxl.job.core.biz.model.TriggerParam;
 
 import java.util.List;
 
-/**
+/** 忙碌转移
  * Created by xuxueli on 17/3/10.
  */
 public class ExecutorRouteBusyover extends ExecutorRouter {
@@ -22,8 +22,8 @@ public class ExecutorRouteBusyover extends ExecutorRouter {
             // beat
             ReturnT<String> idleBeatResult = null;
             try {
-                ExecutorBiz executorBiz = XxlJobScheduler.getExecutorBiz(address);
-                idleBeatResult = executorBiz.idleBeat(new IdleBeatParam(triggerParam.getJobId()));
+                ExecutorBiz executorBiz = XxlJobScheduler.getExecutorBiz(address); //
+                idleBeatResult = executorBiz.idleBeat(new IdleBeatParam(triggerParam.getJobId())); // idleBeat
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
                 idleBeatResult = new ReturnT<String>(ReturnT.FAIL_CODE, ""+e );
