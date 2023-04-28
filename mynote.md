@@ -95,5 +95,15 @@ JobTriggerPoolHelper.trigger(触发执行器) -> JobTriggerPoolHelper.addTrigger
 job_id 是xxl_job_info的id
 
 
+# 分片
+
+```yaml
+// script params：0=param、1=分片序号、2=分片总数
+// 分片参数:  0=zj,1=js,2=gd
+String[] scriptParams = new String[3];
+scriptParams[0] = XxlJobHelper.getJobParam();
+scriptParams[1] = String.valueOf(XxlJobContext.getXxlJobContext().getShardIndex());
+scriptParams[2] = String.valueOf(XxlJobContext.getXxlJobContext().getShardTotal());
+```
 
 

@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 
-/**
+/** 执行器注册线程
  * Created by xuxueli on 17/3/2.
  */
 public class ExecutorRegistryThread {
@@ -41,11 +41,11 @@ public class ExecutorRegistryThread {
 
                 // registry
                 while (!toStop) {
-                    try {
+                    try { // adderss: http://$ip:19999
                         RegistryParam registryParam = new RegistryParam(RegistryConfig.RegistType.EXECUTOR.name(), appname, address);
                         for (AdminBiz adminBiz: XxlJobExecutor.getAdminBizList()) {
                             try {
-                                ReturnT<String> registryResult = adminBiz.registry(registryParam);
+                                ReturnT<String> registryResult = adminBiz.registry(registryParam); // AdminBizClient
                                 if (registryResult!=null && ReturnT.SUCCESS_CODE == registryResult.getCode()) {
                                     registryResult = ReturnT.SUCCESS;
                                     logger.debug(">>>>>>>>>>> xxl-job registry success, registryParam:{}, registryResult:{}", new Object[]{registryParam, registryResult});
@@ -67,7 +67,7 @@ public class ExecutorRegistryThread {
 
                     try {
                         if (!toStop) {
-                            TimeUnit.SECONDS.sleep(RegistryConfig.BEAT_TIMEOUT);
+                            TimeUnit.SECONDS.sleep(RegistryConfig.BEAT_TIMEOUT); // 每30s，执行一次
                         }
                     } catch (InterruptedException e) {
                         if (!toStop) {

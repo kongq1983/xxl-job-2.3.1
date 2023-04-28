@@ -245,7 +245,7 @@ public class EmbedServer {
     // ---------------------- registry ----------------------
 
     public void startRegistry(final String appname, final String address) {
-        // start registry
+        // start registry // 路径: api/registry
         ExecutorRegistryThread.getInstance().start(appname, address);
     }
 

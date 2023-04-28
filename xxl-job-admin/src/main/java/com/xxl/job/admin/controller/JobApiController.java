@@ -59,7 +59,7 @@ public class JobApiController {
             return adminBiz.callback(callbackParamList);
         } else if ("registry".equals(uri)) {
             RegistryParam registryParam = GsonTool.fromJson(data, RegistryParam.class);
-            return adminBiz.registry(registryParam); // xxl_job_registry  先update，如果失败，在insert
+            return adminBiz.registry(registryParam); // xxl_job_registry  先update，如果失败，在insert  实现类: AdminBizImpl
         } else if ("registryRemove".equals(uri)) {
             RegistryParam registryParam = GsonTool.fromJson(data, RegistryParam.class);
             return adminBiz.registryRemove(registryParam); // xxl_job_registry 删除数据

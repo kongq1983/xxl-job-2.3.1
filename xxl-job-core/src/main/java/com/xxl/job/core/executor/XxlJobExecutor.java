@@ -70,8 +70,8 @@ public class XxlJobExecutor  {
         // init logpath
         XxlJobFileAppender.initLogPath(logPath);
 
-        // init invoker, admin-client
-        initAdminBizList(adminAddresses, accessToken); // todo adminAddresses支持多个
+        // init invoker, admin-client // todo adminAddresses支持多个
+        initAdminBizList(adminAddresses, accessToken);
 
 
         // init JobLogFileCleanThread
@@ -81,7 +81,7 @@ public class XxlJobExecutor  {
         TriggerCallbackThread.getInstance().start();
 
         // init executor-server 启动EmbedServer
-        initEmbedServer(address, ip, port, appname, accessToken);
+        initEmbedServer(address, ip, port, appname, accessToken); // 这里address如果没配置，就是为空
     }
 
     public void destroy(){
@@ -141,12 +141,12 @@ public class XxlJobExecutor  {
     private EmbedServer embedServer = null;
 
     private void initEmbedServer(String address, String ip, int port, String appname, String accessToken) throws Exception {
-
+        // appname是配置文件读取的
         // fill ip port
         port = port>0?port: NetUtil.findAvailablePort(9999);
         ip = (ip!=null&&ip.trim().length()>0)?ip: IpUtil.getIp();
 
-        // generate address
+        // generate address  这里处理，如果为空，则自动生成 ，例如: http://192.168.3.10:19999/
         if (address==null || address.trim().length()==0) {
             String ip_port_address = IpUtil.getIpPort(ip, port);   // registry-address：default use address to registry , otherwise use ip:port if address is null
             address = "http://{ip_port}/".replace("{ip_port}", ip_port_address);
