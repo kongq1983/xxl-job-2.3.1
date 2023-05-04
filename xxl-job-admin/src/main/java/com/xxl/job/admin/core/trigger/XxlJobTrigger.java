@@ -84,7 +84,7 @@ public class XxlJobTrigger {
             }
         } else { // 非分片广播
             if (shardingParam == null) {
-                shardingParam = new int[]{0, 1};
+                shardingParam = new int[]{0, 1}; // shardingParam[0] : index, shardingParam[1]:  total
             }
             processTrigger(group, jobInfo, finalFailRetryCount, triggerType, shardingParam[0], shardingParam[1]);
         }

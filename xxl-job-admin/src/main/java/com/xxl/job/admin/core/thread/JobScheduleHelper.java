@@ -53,7 +53,7 @@ public class JobScheduleHelper {
 
                 // pre-read count: treadpool-size * trigger-qps (each trigger cost 50ms, qps = 1000/50 = 20)
                 int preReadCount = (XxlJobAdminConfig.getAdminConfig().getTriggerPoolFastMax() + XxlJobAdminConfig.getAdminConfig().getTriggerPoolSlowMax()) * 20;
-                // todo 最少  (200+100) * 20 = 6000
+                // todo 最少  (200+100) * 20 = 6000，每次从XxlJobInfo表取的数量
                 while (!scheduleThreadToStop) {
 
                     // Scan Job
@@ -83,13 +83,13 @@ public class JobScheduleHelper {
                             for (XxlJobInfo jobInfo: scheduleList) {
 
                                 // time-ring jump
-                                if (nowTime > jobInfo.getTriggerNextTime() + PRE_READ_MS) { // 过期5s外
+                                if (nowTime > jobInfo.getTriggerNextTime() + PRE_READ_MS) { // todo 过期5s外
                                     // 2.1、trigger-expire > 5s：pass && make next-trigger-time
                                     logger.warn(">>>>>>>>>>> xxl-job, schedule misfire, jobId = " + jobInfo.getId());
 
-                                    // 1、misfire match
+                                    // 1、misfire match  调度过期策略
                                     MisfireStrategyEnum misfireStrategyEnum = MisfireStrategyEnum.match(jobInfo.getMisfireStrategy(), MisfireStrategyEnum.DO_NOTHING);
-                                    if (MisfireStrategyEnum.FIRE_ONCE_NOW == misfireStrategyEnum) {
+                                    if (MisfireStrategyEnum.FIRE_ONCE_NOW == misfireStrategyEnum) { // todo 立即执行一次
                                         // FIRE_ONCE_NOW 》 trigger
                                         JobTriggerPoolHelper.trigger(jobInfo.getId(), TriggerTypeEnum.MISFIRE, -1, null, null, null);
                                         logger.debug(">>>>>>>>>>> xxl-job, schedule push trigger : jobId = " + jobInfo.getId() );
@@ -139,7 +139,7 @@ public class JobScheduleHelper {
                             }
 
                             // 3、update trigger info
-                            for (XxlJobInfo jobInfo: scheduleList) { // todo 修改下一次执行时间
+                            for (XxlJobInfo jobInfo: scheduleList) { // todo 修改下一次执行时间  修改trigger_last_time、trigger_next_time、trigger_status
                                 XxlJobAdminConfig.getAdminConfig().getXxlJobInfoDao().scheduleUpdate(jobInfo);
                             }
 
@@ -235,7 +235,7 @@ public class JobScheduleHelper {
 
                     try { // todo 从时间轮内移出 (当前秒数) 和 (前1秒)
                         // second data
-                        List<Integer> ringItemData = new ArrayList<>();
+                        List<Integer> ringItemData = new ArrayList<>();  // todo  ringItemData存放的是jobId
                         int nowSecond = Calendar.getInstance().get(Calendar.SECOND);   // todo 避免处理耗时太长，跨过刻度，向前校验一个刻度
                         for (int i = 0; i < 2; i++) { // i=0 当前秒   i=1 前1秒
                             List<Integer> tmpData = ringData.remove( (nowSecond+60-i)%60 );

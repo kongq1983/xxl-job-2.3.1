@@ -29,7 +29,7 @@ public class XxlJobExecutor  {
     private static final Logger logger = LoggerFactory.getLogger(XxlJobExecutor.class);
 
     // ---------------------- param ----------------------
-    private String adminAddresses;
+    private String adminAddresses;  // todo admin端地址，用逗号分隔(有多个)  xxl.job.admin.addresses
     private String accessToken;
     private String appname;
     private String address;
@@ -116,7 +116,7 @@ public class XxlJobExecutor  {
 
 
     // ---------------------- admin-client (rpc invoker) ----------------------
-    private static List<AdminBiz> adminBizList;
+    private static List<AdminBiz> adminBizList; //  todo adminAddresses : admin端地址，用逗号分隔(有多个)  xxl.job.admin.addresses
     private void initAdminBizList(String adminAddresses, String accessToken) throws Exception {
         if (adminAddresses!=null && adminAddresses.trim().length()>0) {
             for (String address: adminAddresses.trim().split(",")) {
@@ -232,7 +232,7 @@ public class XxlJobExecutor  {
             }
         }
 
-        // registry jobhandler   todo name = xxlJob.value()
+        // registry jobhandler   todo name = xxlJob.value()    最终存放到: jobHandlerRepository.put(name, jobHandler)
         registJobHandler(name, new MethodJobHandler(bean, executeMethod, initMethod, destroyMethod));
 
     }
