@@ -106,4 +106,7 @@ scriptParams[1] = String.valueOf(XxlJobContext.getXxlJobContext().getShardIndex(
 scriptParams[2] = String.valueOf(XxlJobContext.getXxlJobContext().getShardTotal());
 ```
 
-
+# 根目录
+‘/’在windows中也表示根目录，但此跟目录非彼根目录。windows对磁盘分区后会有多个磁盘，通常系统会装在C盘。
+windows有多个磁盘所以就会有‘多个根目录’，在dos命令模式下，在D盘的某文件夹中输入‘cd/’命令回车后会直接回到D盘的根目录。
+其它磁盘下也会回到该磁盘的目录。在哪个磁盘下使用‘/’，它就表示哪个磁盘的根目录。

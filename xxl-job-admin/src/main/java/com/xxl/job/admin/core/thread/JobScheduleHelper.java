@@ -16,7 +16,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-/**
+/** xxl-job执行核心逻辑
  * @author xuxueli 2019-05-21
  */
 public class JobScheduleHelper {
@@ -76,7 +76,7 @@ public class JobScheduleHelper {
                         // tx start
 
                         // 1、pre read
-                        long nowTime = System.currentTimeMillis(); // 查5s内的任务(xxl_job_info)  每次加载最少6000条
+                        long nowTime = System.currentTimeMillis(); // 查5s内的任务(xxl_job_info)  每次加载最少6000条  todo 这里查启用状态 查trigger_status=1
                         List<XxlJobInfo> scheduleList = XxlJobAdminConfig.getAdminConfig().getXxlJobInfoDao().scheduleJobQuery(nowTime + PRE_READ_MS, preReadCount);
                         if (scheduleList!=null && scheduleList.size()>0) {
                             // 2、push time-ring

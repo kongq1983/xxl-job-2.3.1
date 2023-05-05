@@ -31,7 +31,7 @@ public class XxlJobScheduler  {
         JobRegistryHelper.getInstance().start();  // todo 启动执行器注册-删除线程
 
         // admin fail-monitor run
-        JobFailMonitorHelper.getInstance().start();
+        JobFailMonitorHelper.getInstance().start(); // todo 失败日志  及  邮件告警
 
         // admin lose-monitor run ( depend on JobTriggerPoolHelper )
         JobCompleteHelper.getInstance().start();
