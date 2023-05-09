@@ -115,7 +115,7 @@ public class JobThread extends Thread{
 				if (triggerParam!=null) {
 					running = true;
 					idleTimes = 0;
-					triggerLogIdSet.remove(triggerParam.getLogId());
+					triggerLogIdSet.remove(triggerParam.getLogId()); // todo 关键 这里删除， 该logId又可以添加到triggerQueue
 
 					// log filename, like "logPath/yyyy-MM-dd/9999.log"
 					String logFileName = XxlJobFileAppender.makeLogFileName(new Date(triggerParam.getLogDateTime()), triggerParam.getLogId());
@@ -127,7 +127,7 @@ public class JobThread extends Thread{
 							triggerParam.getBroadcastTotal());
 
 					// init job context
-					XxlJobContext.setXxlJobContext(xxlJobContext);
+					XxlJobContext.setXxlJobContext(xxlJobContext); // todo  设置XxlJobContext上下文
 
 					// execute
 					XxlJobHelper.log("<br>----------- xxl-job job execute start -----------<br>----------- Param:" + xxlJobContext.getJobParam());
@@ -165,7 +165,7 @@ public class JobThread extends Thread{
 						// just execute  todo 这里触发handler  最终调用@XxlJob的方法
 						handler.execute();  // todo 执行具体的handler  ，也就是调用@XxlJob标注的方法 **************
 					}
-
+					// todo 执行具体的handler逻辑
 					// valid execute handle data
 					if (XxlJobContext.getXxlJobContext().getHandleCode() <= 0) {
 						XxlJobHelper.handleFail("job handle result lost.");
@@ -204,7 +204,7 @@ public class JobThread extends Thread{
 				XxlJobHelper.log("<br>----------- JobThread Exception:" + errorMsg + "<br>----------- xxl-job job execute end(error) -----------");
 			} finally {
                 if(triggerParam != null) {
-                    // callback handler info
+                    // callback handler info   todo handler逻辑执行完成，回调admin
                     if (!toStop) {
                         // commonm  callBackQueue   callBackQueue.add(callback) // todo callBackQueue.add(callback)
                         TriggerCallbackThread.pushCallBack(new HandleCallbackParam(

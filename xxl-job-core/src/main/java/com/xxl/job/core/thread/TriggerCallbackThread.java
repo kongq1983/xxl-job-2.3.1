@@ -162,9 +162,9 @@ public class TriggerCallbackThread {
      */
     private void doCallback(List<HandleCallbackParam> callbackParamList){
         boolean callbackRet = false;
-        // callback, will retry if error
+        // callback, will retry if error   todo 通知各个admin，只要1个admin处理成功，则终止
         for (AdminBiz adminBiz: XxlJobExecutor.getAdminBizList()) {
-            try {
+            try { // todo 通知admin
                 ReturnT<String> callbackResult = adminBiz.callback(callbackParamList);
                 if (callbackResult!=null && ReturnT.SUCCESS_CODE == callbackResult.getCode()) {
                     callbackLog(callbackParamList, "<br>----------- xxl-job job callback finish.");
