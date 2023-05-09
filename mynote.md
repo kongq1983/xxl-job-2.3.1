@@ -11,6 +11,8 @@ http://localhost:8080/xxl-job-admin/toLogin
 
 # XxlJobAdminConfig
 
+核心类
+
 public void afterPropertiesSet() throws Exception {
     adminConfig = this;
 

@@ -98,7 +98,7 @@ public class JobThread extends Thread{
 
     	// init
     	try {
-			handler.init();
+			handler.init(); // 调用init方法　　bean模式: MethodJobHandler
 		} catch (Throwable e) {
     		logger.error(e.getMessage(), e);
 		}
@@ -111,7 +111,7 @@ public class JobThread extends Thread{
             TriggerParam triggerParam = null;
             try {
 				// to check toStop signal, we need cycle, so wo cannot use queue.take(), instand of poll(timeout)
-				triggerParam = triggerQueue.poll(3L, TimeUnit.SECONDS);
+				triggerParam = triggerQueue.poll(3L, TimeUnit.SECONDS); // todo triggerParam 数据哪里来
 				if (triggerParam!=null) {
 					running = true;
 					idleTimes = 0;
@@ -132,7 +132,7 @@ public class JobThread extends Thread{
 					// execute
 					XxlJobHelper.log("<br>----------- xxl-job job execute start -----------<br>----------- Param:" + xxlJobContext.getJobParam());
 
-					if (triggerParam.getExecutorTimeout() > 0) {
+					if (triggerParam.getExecutorTimeout() > 0) { // 有超时时间
 						// limit timeout
 						Thread futureThread = null;
 						try {
@@ -141,9 +141,9 @@ public class JobThread extends Thread{
 								public Boolean call() throws Exception {
 
 									// init job context
-									XxlJobContext.setXxlJobContext(xxlJobContext);
+									XxlJobContext.setXxlJobContext(xxlJobContext); // todo 先设置XxlJobContext 到当前线程，因为这里是新起的线程
 
-									handler.execute();
+									handler.execute(); // todo 执行具体的handler  ，也就是调用@XxlJob标注的方法 **************
 									return true;
 								}
 							});
@@ -152,18 +152,18 @@ public class JobThread extends Thread{
 
 							Boolean tempResult = futureTask.get(triggerParam.getExecutorTimeout(), TimeUnit.SECONDS);
 						} catch (TimeoutException e) {
-
+							//todo 如果在规定时间内，未执行完成，则抛超时异常，进入到这里
 							XxlJobHelper.log("<br>----------- xxl-job job execute timeout");
 							XxlJobHelper.log(e);
 
 							// handle result
 							XxlJobHelper.handleTimeout("job execute timeout ");
 						} finally {
-							futureThread.interrupt();
+							futureThread.interrupt(); // todo 中断futureThread线程
 						}
-					} else {
+					} else { // todo 没有设置超时时间，则在当前线程执行
 						// just execute  todo 这里触发handler  最终调用@XxlJob的方法
-						handler.execute();
+						handler.execute();  // todo 执行具体的handler  ，也就是调用@XxlJob标注的方法 **************
 					}
 
 					// valid execute handle data
@@ -182,9 +182,9 @@ public class JobThread extends Thread{
 							+ XxlJobContext.getXxlJobContext().getHandleMsg()
 					);
 
-				} else {
+				} else { // todo triggerParam==null
 					if (idleTimes > 30) {
-						if(triggerQueue.size() == 0) {	// avoid concurrent trigger causes jobId-lost
+						if(triggerQueue.size() == 0) {	// avoid concurrent trigger causes jobId-lost 避免并发触发导致jobId丢失
 							XxlJobExecutor.removeJobThread(jobId, "excutor idel times over limit.");
 						}
 					}
@@ -206,7 +206,7 @@ public class JobThread extends Thread{
                 if(triggerParam != null) {
                     // callback handler info
                     if (!toStop) {
-                        // commonm
+                        // commonm  callBackQueue   callBackQueue.add(callback) // todo callBackQueue.add(callback)
                         TriggerCallbackThread.pushCallBack(new HandleCallbackParam(
                         		triggerParam.getLogId(),
 								triggerParam.getLogDateTime(),
@@ -214,7 +214,7 @@ public class JobThread extends Thread{
 								XxlJobContext.getXxlJobContext().getHandleMsg() )
 						);
                     } else {
-                        // is killed
+                        // is killed  // todo callBackQueue.add(callback)
                         TriggerCallbackThread.pushCallBack(new HandleCallbackParam(
                         		triggerParam.getLogId(),
 								triggerParam.getLogDateTime(),

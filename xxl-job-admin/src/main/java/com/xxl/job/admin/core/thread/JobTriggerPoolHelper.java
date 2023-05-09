@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
+/** 初始化一个快处理线程池和一个慢处理线程池，一个任务在1分钟之内出现10次调用超时(500ms)，则这个任务会加入到慢处理线程池中进行调度
  * job trigger thread pool helper
  *
  * @author xuxueli 2018-07-03 21:08:07
@@ -23,7 +23,7 @@ public class JobTriggerPoolHelper {
     // fast/slow thread pool
     private ThreadPoolExecutor fastTriggerPool = null;
     private ThreadPoolExecutor slowTriggerPool = null;
-    // 初始化一个快处理线程池和一个慢处理线程池。如果一个任务在1分钟之内出现10次调用超时，则这个任务会加入到慢处理线程池中进行调度
+    // 初始化一个快处理线程池和一个慢处理线程池。如果一个任务在1分钟之内出现10次调用超时(500ms)，则这个任务会加入到慢处理线程池中进行调度
     public void start(){ // 使执行任务的线程池隔离：调度线程池进行隔离拆分，慢任务自动降级进入"Slow"线程池，避免耗尽调度线程，提高系统稳定性
         fastTriggerPool = new ThreadPoolExecutor(
                 10,
@@ -80,7 +80,7 @@ public class JobTriggerPoolHelper {
         ThreadPoolExecutor triggerPool_ = fastTriggerPool;
         AtomicInteger jobTimeoutCount = jobTimeoutCountMap.get(jobId);
         if (jobTimeoutCount!=null && jobTimeoutCount.get() > 10) {      // job-timeout 10 times in 1 min
-            triggerPool_ = slowTriggerPool;
+            triggerPool_ = slowTriggerPool; // todo 60s内，10次超时(500ms)，则进入慢处理线程池
         }
 
         // trigger
@@ -97,7 +97,7 @@ public class JobTriggerPoolHelper {
                     logger.error(e.getMessage(), e);
                 } finally {
 
-                    // check timeout-count-map
+                    // check timeout-count-map  60s
                     long minTim_now = System.currentTimeMillis()/60000;
                     if (minTim != minTim_now) {
                         minTim = minTim_now;

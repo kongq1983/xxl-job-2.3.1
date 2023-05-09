@@ -13,7 +13,7 @@ import org.springframework.util.StringUtils;
 import java.util.*;
 import java.util.concurrent.*;
 
-/**
+/** 执行器-自动-注册-删除(自动注册类型)
  * job registry instance
  * @author xuxueli 2016-10-02 19:10:24
  */

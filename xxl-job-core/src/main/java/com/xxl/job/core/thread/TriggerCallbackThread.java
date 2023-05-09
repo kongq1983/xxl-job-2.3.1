@@ -169,7 +169,7 @@ public class TriggerCallbackThread {
                 if (callbackResult!=null && ReturnT.SUCCESS_CODE == callbackResult.getCode()) {
                     callbackLog(callbackParamList, "<br>----------- xxl-job job callback finish.");
                     callbackRet = true;
-                    break;
+                    break; // todo 一个成功就结束
                 } else {
                     callbackLog(callbackParamList, "<br>----------- xxl-job job callback fail, callbackResult:" + callbackResult);
                 }
@@ -215,9 +215,9 @@ public class TriggerCallbackThread {
 
         File callbackLogFile = new File(failCallbackFileName.replace("{x}", String.valueOf(System.currentTimeMillis())));
         if (callbackLogFile.exists()) {
-            for (int i = 0; i < 100; i++) {
+            for (int i = 0; i < 100; i++) { // 时间戳后加1-100循环数，如果该文件不存在，则结束循环，把文件存到callbackLogFile
                 callbackLogFile = new File(failCallbackFileName.replace("{x}", String.valueOf(System.currentTimeMillis()).concat("-").concat(String.valueOf(i)) ));
-                if (!callbackLogFile.exists()) {
+                if (!callbackLogFile.exists()) { // 不存在，则终止循环，追加的文件为 :  System.currentTimeMillis()+i
                     break;
                 }
             }

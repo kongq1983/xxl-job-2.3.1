@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentMap;
 public class XxlJobScheduler  {
     private static final Logger logger = LoggerFactory.getLogger(XxlJobScheduler.class);
 
-
+    // todo admin 核心启动类
     public void init() throws Exception {
         // init i18n
         initI18n();

@@ -16,7 +16,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-/** xxl-job执行核心逻辑
+/** xxl-job执行核心逻辑  过期5s外任务、过期5s内任务处理   未过期任务分发到不同的桶(60个桶)
  * @author xuxueli 2019-05-21
  */
 public class JobScheduleHelper {

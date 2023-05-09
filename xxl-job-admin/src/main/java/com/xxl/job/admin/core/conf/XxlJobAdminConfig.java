@@ -37,7 +37,7 @@ public class XxlJobAdminConfig implements InitializingBean, DisposableBean {
         adminConfig = this;
 
         xxlJobScheduler = new XxlJobScheduler();
-        xxlJobScheduler.init();   // todo 启动后台线程
+        xxlJobScheduler.init();   // todo admin 启动后台线程
     }
 
     @Override
