@@ -53,14 +53,14 @@ public class JobApiController {
             return new ReturnT<String>(ReturnT.FAIL_CODE, "The access token is wrong.");
         }
 
-        // services mapping
-        if ("callback".equals(uri)) {  // 处理日志信息 xxl_job_log 比如(trigger_code、trigger_msg)
+        // services mapping  // todo callback: 其实就是根据logId，设置该条日志是否成功或失败  修改字段:  handle_time、handle_msg
+        if ("callback".equals(uri)) {  // todo 处理日志信息 xxl_job_log  client:TriggerCallbackThread
             List<HandleCallbackParam> callbackParamList = GsonTool.fromJson(data, List.class, HandleCallbackParam.class);
             return adminBiz.callback(callbackParamList);
-        } else if ("registry".equals(uri)) { // 执行器注册
+        } else if ("registry".equals(uri)) { // 执行器注册  todo 客户端-主动-推送(每个执行器有个线程在处理) client:ExecutorRegistryThread  admin端:JobRegistryHelper
             RegistryParam registryParam = GsonTool.fromJson(data, RegistryParam.class);
             return adminBiz.registry(registryParam); // xxl_job_registry  先update，如果失败，在insert  实现类: AdminBizImpl
-        } else if ("registryRemove".equals(uri)) { // 执行器删除
+        } else if ("registryRemove".equals(uri)) { // 执行器删除 todo 客户端-主动-推送(每个执行器有个线程在处理) client:ExecutorRegistryThread admin端:JobRegistryHelper
             RegistryParam registryParam = GsonTool.fromJson(data, RegistryParam.class);
             return adminBiz.registryRemove(registryParam); // xxl_job_registry 删除数据
         } else {

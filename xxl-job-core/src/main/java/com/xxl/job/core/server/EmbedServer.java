@@ -190,7 +190,7 @@ public class EmbedServer {
                         return executorBiz.idleBeat(idleBeatParam);
                     case "/run":
                         TriggerParam triggerParam = GsonTool.fromJson(requestData, TriggerParam.class);
-                        return executorBiz.run(triggerParam); // todo 谁来调用/run???     admin端的runExecutor(XxlJobTrigger.trigger) ，也就是执行任务的时候
+                        return executorBiz.run(triggerParam); // todo 谁来调用/run???     admin端的runExecutor(XxlJobTrigger.trigger) ，也就是执行任务的时候，来调用
                     case "/kill":
                         KillParam killParam = GsonTool.fromJson(requestData, KillParam.class);
                         return executorBiz.kill(killParam);

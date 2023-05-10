@@ -45,7 +45,7 @@ public class ExecutorRegistryThread {
                         RegistryParam registryParam = new RegistryParam(RegistryConfig.RegistType.EXECUTOR.name(), appname, address);
                         for (AdminBiz adminBiz: XxlJobExecutor.getAdminBizList()) {
                             try {
-                                ReturnT<String> registryResult = adminBiz.registry(registryParam); // AdminBizClient
+                                ReturnT<String> registryResult = adminBiz.registry(registryParam); // AdminBizClient todo registry 执行器-注册
                                 if (registryResult!=null && ReturnT.SUCCESS_CODE == registryResult.getCode()) {
                                     registryResult = ReturnT.SUCCESS;
                                     logger.debug(">>>>>>>>>>> xxl-job registry success, registryParam:{}, registryResult:{}", new Object[]{registryParam, registryResult});
@@ -81,7 +81,7 @@ public class ExecutorRegistryThread {
                     RegistryParam registryParam = new RegistryParam(RegistryConfig.RegistType.EXECUTOR.name(), appname, address);
                     for (AdminBiz adminBiz: XxlJobExecutor.getAdminBizList()) {
                         try { // todo 注册删除
-                            ReturnT<String> registryResult = adminBiz.registryRemove(registryParam);
+                            ReturnT<String> registryResult = adminBiz.registryRemove(registryParam); // todo 执行器-主动-删除
                             if (registryResult!=null && ReturnT.SUCCESS_CODE == registryResult.getCode()) {
                                 registryResult = ReturnT.SUCCESS;
                                 logger.info(">>>>>>>>>>> xxl-job registry-remove success, registryParam:{}, registryResult:{}", new Object[]{registryParam, registryResult});

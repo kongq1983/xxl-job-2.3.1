@@ -150,7 +150,7 @@ public class JobCompleteHelper {
 
 		return ReturnT.SUCCESS;
 	}
-
+	// todo 其实就是根据logId，设置该条数据是否成功或失败  修改字段:  handleCode、handleMsg
 	private ReturnT<String> callback(HandleCallbackParam handleCallbackParam) {
 		// valid log item   select * FROM xxl_job_log AS t WHERE t.id = #{id}
 		XxlJobLog log = XxlJobAdminConfig.getAdminConfig().getXxlJobLogDao().load(handleCallbackParam.getLogId()); // 根据id查询
