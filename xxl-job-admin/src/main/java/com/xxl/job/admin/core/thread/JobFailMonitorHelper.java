@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-/**
+/** 告警
  * job monitor instance
  *
  * @author xuxueli 2015-9-1 18:05:56

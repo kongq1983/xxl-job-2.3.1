@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-/**
+/** 清理日志逻辑
  * job log report helper
  *
  * @author xuxueli 2019-11-22
@@ -35,7 +35,7 @@ public class JobLogReportHelper {
 
                 // last clean log time
                 long lastCleanLogTime = 0;
-
+                // todo 本类功能:   1. 最后3天日志，汇总成xxl_job_log_report   2. 清理7天之前的日志(xxl_job_log)
 
                 while (!toStop) {
 
@@ -46,20 +46,20 @@ public class JobLogReportHelper {
 
                             // today
                             Calendar itemDay = Calendar.getInstance();
-                            itemDay.add(Calendar.DAY_OF_MONTH, -i);
+                            itemDay.add(Calendar.DAY_OF_MONTH, -i); // todo 今天、昨天、前天
                             itemDay.set(Calendar.HOUR_OF_DAY, 0);
                             itemDay.set(Calendar.MINUTE, 0);
                             itemDay.set(Calendar.SECOND, 0);
                             itemDay.set(Calendar.MILLISECOND, 0);
 
-                            Date todayFrom = itemDay.getTime();
+                            Date todayFrom = itemDay.getTime(); // todo 改天的开始时间(某天第1毫秒)
 
                             itemDay.set(Calendar.HOUR_OF_DAY, 23);
                             itemDay.set(Calendar.MINUTE, 59);
                             itemDay.set(Calendar.SECOND, 59);
                             itemDay.set(Calendar.MILLISECOND, 999);
 
-                            Date todayTo = itemDay.getTime();
+                            Date todayTo = itemDay.getTime(); // todo 该天地结束最后(某天最后1毫秒)
 
                             // refresh log-report every minute
                             XxlJobLogReport xxlJobLogReport = new XxlJobLogReport();
@@ -67,7 +67,7 @@ public class JobLogReportHelper {
                             xxlJobLogReport.setRunningCount(0);
                             xxlJobLogReport.setSucCount(0);
                             xxlJobLogReport.setFailCount(0);
-
+                            // todo 统计当天的相关(正在运行、成功数、失败数)数量
                             Map<String, Object> triggerCountMap = XxlJobAdminConfig.getAdminConfig().getXxlJobLogDao().findLogReport(todayFrom, todayTo);
                             if (triggerCountMap!=null && triggerCountMap.size()>0) {
                                 int triggerDayCount = triggerCountMap.containsKey("triggerDayCount")?Integer.valueOf(String.valueOf(triggerCountMap.get("triggerDayCount"))):0;
@@ -75,12 +75,12 @@ public class JobLogReportHelper {
                                 int triggerDayCountSuc = triggerCountMap.containsKey("triggerDayCountSuc")?Integer.valueOf(String.valueOf(triggerCountMap.get("triggerDayCountSuc"))):0;
                                 int triggerDayCountFail = triggerDayCount - triggerDayCountRunning - triggerDayCountSuc;
 
-                                xxlJobLogReport.setRunningCount(triggerDayCountRunning);
-                                xxlJobLogReport.setSucCount(triggerDayCountSuc);
-                                xxlJobLogReport.setFailCount(triggerDayCountFail);
+                                xxlJobLogReport.setRunningCount(triggerDayCountRunning); // todo 正在运行的数量
+                                xxlJobLogReport.setSucCount(triggerDayCountSuc);  // todo 成功数
+                                xxlJobLogReport.setFailCount(triggerDayCountFail);  // todo 失败数
                             }
 
-                            // do refresh
+                            // do refresh  todo 保存或修改到xxl_job_log_report
                             int ret = XxlJobAdminConfig.getAdminConfig().getXxlJobLogReportDao().update(xxlJobLogReport);
                             if (ret < 1) {
                                 XxlJobAdminConfig.getAdminConfig().getXxlJobLogReportDao().save(xxlJobLogReport);
@@ -92,12 +92,12 @@ public class JobLogReportHelper {
                             logger.error(">>>>>>>>>>> xxl-job, job log report thread error:{}", e);
                         }
                     }
+                    // todo 上面把xxl_job汇总成xxl_job_log_report
+                    // 2、log-clean: switch open & once each day   todo 下面逻辑是删除xxl_job
+                    if (XxlJobAdminConfig.getAdminConfig().getLogretentiondays()>0 // todo logretentiondays要7天以上，第1个条件才是true
+                            && System.currentTimeMillis() - lastCleanLogTime > 24*60*60*1000) {  // todo 第2个条件是 每隔1天 清理1次
 
-                    // 2、log-clean: switch open & once each day
-                    if (XxlJobAdminConfig.getAdminConfig().getLogretentiondays()>0
-                            && System.currentTimeMillis() - lastCleanLogTime > 24*60*60*1000) {
-
-                        // expire-time
+                        // expire-time  todo 清理7天之前的数据(logretentiondays最小是7，才会进入这里)
                         Calendar expiredDay = Calendar.getInstance();
                         expiredDay.add(Calendar.DAY_OF_MONTH, -1 * XxlJobAdminConfig.getAdminConfig().getLogretentiondays());
                         expiredDay.set(Calendar.HOUR_OF_DAY, 0);
@@ -116,10 +116,10 @@ public class JobLogReportHelper {
                         } while (logIds!=null && logIds.size()>0);
 
                         // update clean time
-                        lastCleanLogTime = System.currentTimeMillis();
+                        lastCleanLogTime = System.currentTimeMillis(); // todo 记录最后1次清理时间
                     }
 
-                    try {
+                    try { // todo 休息1分钟
                         TimeUnit.MINUTES.sleep(1);
                     } catch (Exception e) {
                         if (!toStop) {

@@ -74,7 +74,7 @@ public class XxlJobExecutor  {
         initAdminBizList(adminAddresses, accessToken);
 
 
-        // init JobLogFileCleanThread
+        // init JobLogFileCleanThread  todo 清理日志文件
         JobLogFileCleanThread.getInstance().start(logRetentionDays);
 
         // init TriggerCallbackThread  todo callback

@@ -130,3 +130,13 @@ windows有多个磁盘所以就会有‘多个根目录’，在dos命令模式�
 ## 调度过期策略逻辑
 
 ## 日志如何处理的
+
+## admin端，清理日志逻辑
+JobLogReportHelper
+
+## 快慢线程池
+JobTriggerPoolHelper
+
+## 日志清理
+JobLogFileCleanThread:  客户端: 清理日志文件
+JobCompleteHelper: admin端:  清理数据库日志数据xxl_job_log

@@ -12,7 +12,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-/**
+/** 清理日志文件
  * job file clean thread
  *
  * @author xuxueli 2017-12-29 16:23:43
@@ -30,7 +30,7 @@ public class JobLogFileCleanThread {
     public void start(final long logRetentionDays){
 
         // limit min value
-        if (logRetentionDays < 3 ) {
+        if (logRetentionDays < 3 ) { // 如果配置1或2天，会咋样？  当前后台线程，就不会启动了!!!!!!
             return;
         }
 
@@ -73,7 +73,7 @@ public class JobLogFileCleanThread {
                                 if (logFileCreateDate == null) {
                                     continue;
                                 }
-
+                                // todo 清理logRetentionDays天之前的日志  admin端最小7，client端，根据配置文件配置读取，最小3，否则本线程不会运行
                                 if ((todayDate.getTime()-logFileCreateDate.getTime()) >= logRetentionDays * (24 * 60 * 60 * 1000) ) {
                                     FileUtil.deleteRecursively(childFile);
                                 }
